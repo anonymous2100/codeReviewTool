@@ -1,0 +1,4 @@
+##  Code Review Bot 暂不可用
+AI 服务当前不可用 (%s)，本次 MR 无法自动审查。
+请进行人工 Code Review。服务恢复后将自动通知。
+> 错误详情: %s

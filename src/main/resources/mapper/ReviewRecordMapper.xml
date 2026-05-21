@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.reviewbot.mapper.ReviewRecordMapper">
+
+    <select id="findByProjectIdAndDateRange" resultType="com.ctgu.reviewbot.model.ReviewRecord">
+        SELECT * FROM review_records
+        WHERE project_id = #{projectId}
+          AND created_at BETWEEN #{from} AND #{to}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findByProjectIdSince" resultType="com.ctgu.reviewbot.model.ReviewRecord">
+        SELECT * FROM review_records
+        WHERE project_id = #{projectId}
+          AND created_at >= #{since}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="countBlockingReviews" resultType="long">
+        SELECT COUNT(*) FROM review_records
+        WHERE project_id = #{projectId}
+          AND created_at BETWEEN #{from} AND #{to}
+          AND has_blocking = TRUE
+    </select>
+
+</mapper>

@@ -1,0 +1,90 @@
+server:
+  port: ${APP_PORT:8099}
+
+spring:
+  application:
+    name: code-review-bot
+  profiles:
+    active: dev
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      continue-on-error: true
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+ai:
+  provider: ${AI_PROVIDER:deepseek}
+  base-url: ${AI_BASE_URL:https://api.deepseek.com/v1}
+  api-key: ${DEEPSEEK_API_KEY}
+  model: ${AI_MODEL:deepseek-v4-flash}
+  max-tokens: 2048
+  temperature: 0.15
+  top-p: 0.95
+  timeout: 60s
+
+gitlab:
+  base-url: ${GITLAB_BASE_URL:https://gitlab.com/api/v4}
+  token: ${GITLAB_TOKEN:}
+  connect-timeout: 5s
+  read-timeout: 30s
+
+webhook:
+  secret: ${WEBHOOK_SECRET:}
+
+review:
+  max-files-per-mr: 50
+  max-diff-lines-per-file: 500
+  max-concurrency: 5
+  max-diff-chars: 50000
+  review-timeout: 120s
+  skip-patterns:
+    - "**/*Test.java"
+    - "**/generated/**"
+    - "**/target/**"
+  target-branches:
+    - main
+    - master
+    - develop
+    - release/*
+  retry:
+    max-attempts: 4
+    initial-delay: 1000ms
+    multiplier: 2.0
+    max-delay: 10s
+
+executor:
+  review:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: code-review-bot
+
+logging:
+  level:
+    root: WARN
+    com.ctgu.reviewbot: INFO
+  file:
+    name: logs/review-bot.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  logback:
+    rolling-policy:
+      max-file-size: 50MB
+      max-history: 30
